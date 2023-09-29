@@ -1,0 +1,16 @@
+// Stateless Widgets - Constrói e Destrói
+
+// Stateful Widgets -
+
+void initState() {
+  // é disparado quando o Widget for criado
+}
+
+Widget build(BuildContext context) {
+  // disparado quando o objeto for construído e o widget aparecerá na tela
+  return null;
+}
+
+void deactivate() {
+  // é disparado quando o widget foi destruído
+}
