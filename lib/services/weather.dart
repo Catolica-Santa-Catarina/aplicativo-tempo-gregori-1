@@ -1,33 +1,36 @@
-class WeatherModel {
-  String getWeatherIcon(int condition) {
-    if (condition < 300) {
-      return '🌩';
-    } else if (condition < 400) {
-      return '🌧';
-    } else if (condition < 600) {
-      return '☔️';
-    } else if (condition < 700) {
-      return '☃️';
-    } else if (condition < 800) {
-      return '🌫';
-    } else if (condition == 800) {
-      return '☀️';
-    } else if (condition <= 804) {
-      return '☁️';
-    } else {
-      return '🤷‍';
-    }
+import 'package:tempo_template/models/location.dart';
+import 'package:tempo_template/models/weather_data.dart';
+import 'package:tempo_template/utilities/constants.dart';
+
+import 'location_service.dart';
+import 'networking.dart';
+
+class WeatherService {
+  Future<Location> getLocation() async {
+    var locationService = LocationService();
+    var location = await locationService.getCurrentLocation();
+    return location;
   }
 
-  String getMessage(int temp) {
-    if (temp > 25) {
-      return 'É tempo de 🍦';
-    } else if (temp > 20) {
-      return 'O tempo está bom para bermuda e 👕';
-    } else if (temp < 10) {
-      return 'Você precisará de 🧣 e 🧤';
-    } else {
-      return 'Leve um 🧥';
-    }
+  Future<WeatherData> getLocationWeather() async {
+    var location = await getLocation();
+
+    var url =
+        '$openWeatherUrl?lat=${location.latitude}&lon=${location.longitude}'
+        '&appid=$apiKey&units=metric';
+
+    var jsonData = await NetworkHelper(url).getData();
+    var weatherData = WeatherData.fromJson(jsonData);
+
+    return weatherData;
+  }
+
+  Future<WeatherData> getCityWeather(String cityName) async {
+    var url = '$openWeatherUrl?q=$cityName&appid=$apiKey&units=metric';
+
+    var jsonData = await NetworkHelper(url).getData();
+    var weatherData = WeatherData.fromJson(jsonData);
+
+    return weatherData;
   }
 }

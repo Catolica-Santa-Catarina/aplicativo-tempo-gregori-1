@@ -1,8 +1,8 @@
-import 'dart:developer';
-
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:tempo_template/services/location_service.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:tempo_template/models/weather_data.dart';
+import 'package:tempo_template/screens/location_screen.dart';
+import 'package:tempo_template/services/weather.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key}) : super(key: key);
@@ -12,43 +12,34 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  Future<void> getLocation() async {
-    var locationService = LocationService();
-    var location = await locationService.getCurrentLocation();
-    log("Localização atual: lat: ${location.latitude}, long: ${location.longitude}");
+  Future<void> getWeatherData() async {
+    var weatherData = await WeatherService().getLocationWeather();
+    pushToLocationScreen(weatherData);
   }
 
-  Future<void> getWeatherData() async {
-    var url = Uri.parse(
-        'https://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=b6907d289e10d714a6e88b30761fae22');
-
-    var response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      var data = response.body;
-      log(data);
-    } else {
-      log(response.statusCode.toString());
-    }
+  void pushToLocationScreen(WeatherData weatherData) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => LocationScreen(
+                weatherData: weatherData,
+              )),
+    );
   }
 
   @override
   void initState() {
     super.initState();
-    getLocation();
     getWeatherData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // obtém a localização atual
-            getLocation();
-          },
-          child: const Text('Obter Localização'),
+        child: SpinKitDoubleBounce(
+          color: Colors.white,
+          size: 100.0,
         ),
       ),
     );
